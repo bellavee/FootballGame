@@ -34,6 +34,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ball.h" />
+    <ClInclude Include="Constant.h" />
     <ClInclude Include="Debug.h" />
     <ClInclude Include="DummyEntity.h" />
     <ClInclude Include="Entity.h" />

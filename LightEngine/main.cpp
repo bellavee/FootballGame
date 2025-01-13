@@ -8,13 +8,14 @@
 #include <cstdlib>
 #include <crtdbg.h>
 
+#include "MatchScene.h"
+
 int main() 
-{
+{ 
     GameManager* pInstance = GameManager::Get();
 
-	pInstance->CreateWindow(1280, 720, "SampleScene");
-	
-	pInstance->LaunchScene<SampleScene>();
+    pInstance->CreateWindow(1280, 720, "Rugby Game");
 
-	return 0;
+    pInstance->LaunchScene<MatchScene>();
+    return 0;
 }
