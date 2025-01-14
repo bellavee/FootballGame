@@ -13,23 +13,21 @@ public:
 	void OnEvent(const sf::Event& event) override;
 	void OnUpdate() override;
 
+	const std::vector<Player*>& GetGreenTeam() const { return mGreenTeam; }
+	const std::vector<Player*>& GetRedTeam() const { return mRedTeam; }
+
 private:
-	void CreateFieldLines();
 	void CreatePlayers();
 	void DrawGoalLines();
 
 	void DrawZones();
 	void HighlightZone(float top, float bottom);
 	void DrawZoneNumber(int number, float y);
-	void DebugBall();
-
-	float GetZoneHeight() const { return GetWindowHeight() / 3.0f; }
 
 private:
-	std::vector<Player*> mTeamGreen;
-	std::vector<Player*> mTeamRed;
+	std::vector<Player*> mGreenTeam;
+	std::vector<Player*> mRedTeam;
 	Ball* mBall;
-	float mBallDirection;
 
 	sf::RectangleShape mLeftGoalLine;
 	sf::RectangleShape mRightGoalLine;

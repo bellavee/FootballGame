@@ -8,9 +8,7 @@ void MatchScene::OnInitialize() {
     CreatePlayers();
 
     mBall = CreateEntity<Ball>(Constant::BALL_RADIUS, sf::Color::Yellow);
-    mBall->SetPosition(250.f, GetWindowHeight() * 0.5f);
-    mBallDirection = 1.0f;
-    mMatchManager = new MatchManager(&mTeamGreen, &mTeamRed, this, mBall);
+    mMatchManager = new MatchManager(&mGreenTeam, &mRedTeam, this, mBall);
 }
 
 void MatchScene::OnEvent(const sf::Event& event) {
@@ -21,7 +19,6 @@ void MatchScene::OnUpdate() {
     mMatchManager->Update();
     DrawGoalLines();
 	DrawZones();
-    DebugBall();
 }
 
 void MatchScene::CreatePlayers() {
@@ -57,7 +54,7 @@ void MatchScene::CreatePlayers() {
         player->SetPosition(greenPositions[i].x, greenPositions[i].y);
         player->SetTeam(0);
         player->SetZoneBounds(zoneBounds[i].first, zoneBounds[i].second);
-        mTeamGreen.push_back(player);
+        mGreenTeam.push_back(player);
     }
 
     for (int i = 0; i < Constant::PLAYERS_PER_TEAM; i++) {
@@ -65,7 +62,7 @@ void MatchScene::CreatePlayers() {
         player->SetPosition(redPositions[i].x, redPositions[i].y);
         player->SetTeam(1);
         player->SetZoneBounds(zoneBounds[i].first, zoneBounds[i].second);
-        mTeamRed.push_back(player);
+        mRedTeam.push_back(player);
     }
 }
 
@@ -116,17 +113,4 @@ void MatchScene::DrawZoneNumber(int number, float y) {
         0.5f, 0.5f,
         sf::Color::Red
     );
-}
-
-void MatchScene::DebugBall() {
-    float ballSpeed = 200.0f;
-    float currentY = mBall->GetPosition().y;
-    float nextY = currentY + (mBallDirection * ballSpeed * GetDeltaTime());
-
-    if (nextY <= 0 || nextY >= GetWindowHeight()) {
-        mBallDirection *= -1.0f;
-        nextY = currentY + (mBallDirection * ballSpeed * GetDeltaTime());
-    }
-
-    mBall->SetPosition(mBall->GetPosition().x, nextY);
 }

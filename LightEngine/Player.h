@@ -20,6 +20,7 @@ public:
 
 	void HoldBall(Ball* ball);
 	void LoseBall(Ball* ball);
+	void GiveBall(Player* player, Ball* ball);
 
 private:
 	int mTeamSide;
