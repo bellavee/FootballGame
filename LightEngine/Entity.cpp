@@ -18,6 +18,7 @@ void Entity::Initialize(float radius, const sf::Color& color)
 	mShape.setFillColor(color);
 	
 	mTarget.isSet = false;
+	OnInitialize();
 }
 
 bool Entity::IsColliding(Entity* other) const

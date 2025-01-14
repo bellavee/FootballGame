@@ -46,6 +46,9 @@
     <ClCompile Include="Ball.cpp">
       <Filter>Game</Filter>
     </ClCompile>
+    <ClCompile Include="MatchManager.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -85,6 +88,9 @@
       <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="Constant.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="MatchManager.h">
       <Filter>Game</Filter>
     </ClInclude>
   </ItemGroup>

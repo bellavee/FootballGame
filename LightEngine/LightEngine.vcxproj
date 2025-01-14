@@ -25,6 +25,7 @@
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MatchManager.cpp" />
     <ClCompile Include="MatchScene.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerAI.cpp" />
@@ -39,6 +40,7 @@
     <ClInclude Include="DummyEntity.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="GameManager.h" />
+    <ClInclude Include="MatchManager.h" />
     <ClInclude Include="MatchScene.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerAI.h" />
