@@ -8,38 +8,20 @@ void MatchScene::OnInitialize() {
     CreatePlayers();
 
     mBall = CreateEntity<Ball>(Constant::BALL_RADIUS, sf::Color::Yellow);
+
+    mBall->SetPosition(GetWindowWidth() / 2.0f, GetWindowHeight() / 2.0f);
+
     mMatchManager = new MatchManager(&mGreenTeam, &mRedTeam, this, mBall);
+
+    int randomIndex = rand() % mGreenTeam.size();
+    mGreenTeam[randomIndex]->HoldBall(mBall);
 }
 
 void MatchScene::OnEvent(const sf::Event& event) {
     if (event.type == sf::Event::KeyPressed) {
         if (event.key.code == sf::Keyboard::F1) {
             mDebugMode = !mDebugMode; 
-        }
-        if (event.key.code == sf::Keyboard::F2) {
-            mShowPassTrajectory = !mShowPassTrajectory; 
-        }
-    }
-
-    if (event.type == sf::Event::MouseButtonPressed) {
-        if (event.mouseButton.button == sf::Mouse::Left) {
-            sf::Vector2f mousePos(event.mouseButton.x, event.mouseButton.y);
-
-            for (Player* player : mGreenTeam) {
-                if (player->IsInside(mousePos.x, mousePos.y)) {
-                    mSelectedPlayer = player;
-                    return;
-                }
-            }
-
-            for (Player* player : mRedTeam) {
-                if (player->IsInside(mousePos.x, mousePos.y)) {
-                    mSelectedPlayer = player;
-                    return;
-                }
-            }
-
-            mSelectedPlayer = nullptr; 
+            mShowPassTrajectory = !mShowPassTrajectory;
         }
     }
 }
@@ -47,27 +29,24 @@ void MatchScene::OnEvent(const sf::Event& event) {
 void MatchScene::OnUpdate() {
     mMatchManager->Update();
     DrawGoalLines();
-    DrawZones();
 
     if (mDebugMode) {
-        sf::Vector2f mousePos = GetMouseWorldPosition();
+        DrawZones();
 
         for (Player* player : mGreenTeam) {
-            player->DrawDebugInfo(player == mSelectedPlayer); 
-            if (player == mSelectedPlayer) {
-                player->DrawInterceptionLines();
-                if (player->HasBall() && mShowPassTrajectory) {
-                    player->DrawPassingTrajectory(mousePos);
+            player->DrawInterceptionLines();
+            if (player->HasBall() && mShowPassTrajectory) {
+                if (Player* target = player->FindBestPassTarget()) {
+                    player->DrawPassingTrajectory(target->GetPosition());
                 }
             }
         }
 
         for (Player* player : mRedTeam) {
-            player->DrawDebugInfo(player == mSelectedPlayer); 
-            if (player == mSelectedPlayer) {
-                player->DrawInterceptionLines();
-                if (player->HasBall() && mShowPassTrajectory) {
-                    player->DrawPassingTrajectory(mousePos);
+            player->DrawInterceptionLines();
+            if (player->HasBall() && mShowPassTrajectory) {
+                if (Player* target = player->FindBestPassTarget()) {
+                    player->DrawPassingTrajectory(target->GetPosition());
                 }
             }
         }
@@ -132,10 +111,10 @@ void MatchScene::DrawGoalLines() {
         sf::Color::White
     );
 
-    std::string scoreText = "Score: " +
-        std::to_string(mMatchManager->GetGreenScore()) + " - " +
-        std::to_string(mMatchManager->GetRedScore());
-    Debug::DrawText(GetWindowWidth() / 2.0f, 10.0f, scoreText, 0.5f, 0.0f, sf::Color::White);
+    std::string scoreText = "Green " + std::to_string(mMatchManager->GetGreenScore()) +
+        " - " +
+        std::to_string(mMatchManager->GetRedScore()) + " Red";
+    Debug::DrawText(GetWindowWidth() / 2.0f, 30.0f, scoreText, 0.5f, 0.5f, sf::Color::Yellow);
 }
 
 void MatchScene::DrawZones() {

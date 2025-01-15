@@ -14,7 +14,6 @@ void Player::OnInitialize() {
 void Player::OnUpdate() {
 	float dt = GetDeltaTime();
 
-	// Update timers
 	if (mInvincibilityTimer > 0) {
 		mInvincibilityTimer -= dt;
 	}
@@ -25,32 +24,33 @@ void Player::OnUpdate() {
 
 	if (mSpeedBoostTimer > 0) {
 		mSpeedBoostTimer -= dt;
-		SetSpeed(mBoostSpeed);
+		SetSpeed(Constant::PLAYER_SPEED * 1.5f);
 	}
 	else {
-		SetSpeed(mBaseSpeed);
+		SetSpeed(Constant::PLAYER_SPEED);
 	}
+
+	MatchScene* matchScene = dynamic_cast<MatchScene*>(GetScene());
+	std::vector<Player*> opposingTeam = mTeamSide == 0 ?
+		matchScene->GetRedTeam() : matchScene->GetGreenTeam();
 
 	if (mHasBall) {
-		MoveTowardGoal();
-
-		if (CanMakePass()) {
-			Player* target = FindBestPassTarget();
-			if (target) {
-				Ball* ball = mCurrentHolder; 
-				GiveBall(target, ball);
-			}
-		}
+		HandleBallCarrierBehavior(opposingTeam);
 	}
 	else {
-		sf::Vector2f pos = GetPosition();
-		if (pos.y <= mZoneMinY) {
-			SetDirection(0, 1);
-			SetSpeed(150.0f);
-		}
-		else if (pos.y >= mZoneMaxY) {
-			SetDirection(0, -1);
-			SetSpeed(150.0f);
+		if (Ball* ball = matchScene->GetBall()) {
+			Player* ballCarrier = ball->GetCurrentHolder();
+			if (ballCarrier) {
+				if (ballCarrier->GetTeam() == mTeamSide) {
+					HandleSupportingBehavior(ballCarrier);
+				}
+				else {
+					HandleDefensiveBehavior(ballCarrier);
+				}
+			}
+			else {
+				HandleFreeBallBehavior(ball);
+			}
 		}
 	}
 
@@ -60,10 +60,6 @@ void Player::OnUpdate() {
 }
 
 void Player::OnCollision(Entity* collidedWith) {
-	if (dynamic_cast<Player*>(collidedWith)) {
-		return;
-	}
-
 	if (Ball* ball = dynamic_cast<Ball*>(collidedWith)) {
 		if (ball->GetCurrentHolder() == nullptr) {
 			HoldBall(ball);
@@ -111,6 +107,8 @@ Player* Player::FindBestPassTarget() {
 
 	Player* bestTarget = nullptr;
 	float bestScore = -1.0f;
+	float MIN_DIST = 50.0f;
+	float MAX_DIST = 300.0f;
 	sf::Vector2f myPos = GetPosition();
 
 	for (Player* teammate : myTeammates) {
@@ -127,20 +125,13 @@ Player* Player::FindBestPassTarget() {
 
 		sf::Vector2f teammatePos = teammate->GetPosition();
 
-		if ((mTeamSide == 0 && teammatePos.x > myPos.x) ||
-			(mTeamSide == 1 && teammatePos.x < myPos.x)) {
-			continue;
-		}
-
 		float score = 0.0f;
 
 		float distance = std::hypot(teammatePos.x - myPos.x, teammatePos.y - myPos.y);
-		if (distance < 50.0f || distance > 300.0f) continue;
-		score += (1.0f - (distance / 300.0f)) * 0.4f;
+		if (distance < MIN_DIST || distance > MAX_DIST) continue;
+		score += (1.0f - (distance / MAX_DIST)) * 0.4f;
 
 		bool isBlocked = false;
-		std::vector<Player*> opponents = mTeamSide == 0 ? matchScene->GetGreenTeam() : matchScene->GetRedTeam();
-
 		for (Player* opponent : opponents) {
 			sf::Vector2f oppPos = opponent->GetPosition();
 			if (IsOpponentBlockingPass(myPos, teammatePos, oppPos)) {
@@ -148,11 +139,17 @@ Player* Player::FindBestPassTarget() {
 				break;
 			}
 		}
+		if (isBlocked) continue;
 
 		float progressScore = mTeamSide == 0 ?
-			(teammatePos.x / matchScene->GetWindowWidth()) :
+			(teammatePos.x / matchScene->GetWindowWidth()) : 
 			(1.0f - teammatePos.x / matchScene->GetWindowWidth());
 		score += progressScore * 0.6f;
+
+		if ((mTeamSide == 0 && teammatePos.x > myPos.x) ||
+			(mTeamSide == 1 && teammatePos.x < myPos.x)) {
+			score *= 1.5f;  
+		}
 
 		if (score > bestScore) {
 			bestScore = score;
@@ -163,93 +160,20 @@ Player* Player::FindBestPassTarget() {
 	return bestScore > 0.3f ? bestTarget : nullptr;
 }
 
-void Player::MoveTowardGoal() {
-	sf::Vector2f currentPos = GetPosition();
-	float goalX = mTeamSide == 0 ?
-		GetScene()->GetWindowWidth() - Constant::GOAL_LINE_MARGIN :
-		Constant::GOAL_LINE_MARGIN;
-
-	float targetY = currentPos.y;
-	float zoneMinY = mZoneMinY;
-	float zoneMaxY = mZoneMaxY;
-
-	MatchScene* matchScene = dynamic_cast<MatchScene*>(GetScene());
-	std::vector<Player*> opponents = mTeamSide == 0 ? matchScene->GetGreenTeam() : matchScene->GetRedTeam();
-
-	Player* nearestThreat = nullptr;
-	float minThreatDist = FLT_MAX;
-
-	for (Player* opponent : opponents) {
-		sf::Vector2f oppPos = opponent->GetPosition();
-
-		if ((mTeamSide == 0 && oppPos.x < currentPos.x) ||
-			(mTeamSide == 1 && oppPos.x > currentPos.x)) {
-			continue;
-		}
-
-		float dist = std::hypot(oppPos.x - currentPos.x, oppPos.y - currentPos.y);
-		if (dist < minThreatDist) {
-			minThreatDist = dist;
-			nearestThreat = opponent;
-		}
-	}
-
-	if (nearestThreat && minThreatDist < 150.0f) {
-		sf::Vector2f threatPos = nearestThreat->GetPosition();
-		if (threatPos.y > currentPos.y) {
-			targetY = std::max(zoneMinY, currentPos.y - 50.f);
-		}
-		else {
-			targetY = std::min(zoneMaxY, currentPos.y + 50.f);
-		}
-	}
-
-	float moveX = mTeamSide == 0 ? goalX - 50.f : goalX + 50.f;
-	GoToPosition(moveX, targetY);
-}
-
-
 bool Player::IsOpponentBlockingPass(const sf::Vector2f& from,
 	const sf::Vector2f& to,
 	const sf::Vector2f& oppPos) {
 	const float SAFETY_MARGIN = 30.0f;
 
 	float lineLength = std::hypot(to.x - from.x, to.y - from.y);
-	float crossProduct = std::abs((to.x - from.x) * (from.y - oppPos.y) -
-		(from.x - oppPos.x) * (to.y - from.y));
+	float crossProduct = std::abs((to.x - from.x) * (from.y - oppPos.y) - (from.x - oppPos.x) * (to.y - from.y));
 	float perpDistance = crossProduct / lineLength;
 
 	if (perpDistance > SAFETY_MARGIN) return false;
 
-	float dotProduct = ((oppPos.x - from.x) * (to.x - from.x) +
-		(oppPos.y - from.y) * (to.y - from.y)) / (lineLength * lineLength);
+	float dotProduct = ((oppPos.x - from.x) * (to.x - from.x) + (oppPos.y - from.y) * (to.y - from.y)) / (lineLength * lineLength);
 
 	return dotProduct >= 0 && dotProduct <= 1;
-}
-
-void Player::DrawDebugInfo(bool isSelected) {
-	sf::Vector2f pos = GetPosition();
-	float radius = GetRadius();
-
-	if (isSelected) {
-		Debug::DrawCircle(
-			pos.x, pos.y,
-			radius + 5.0f, 
-			sf::Color(255, 255, 0, 128)  
-		);
-
-		std::string info = "Team: " + std::to_string(mTeamSide) +
-			"\nHas Ball: " + (mHasBall ? "Yes" : "No");
-		Debug::DrawText(pos.x, pos.y - radius - 20, info, 0.5f, 1.0f, sf::Color::White);
-	}
-
-	if (mHasBall) {
-		Debug::DrawCircle(
-			pos.x, pos.y,
-			radius + 3.0f,
-			sf::Color(0, 0, 255, 180) 
-		);
-	}
 }
 
 void Player::DrawInterceptionLines() {
@@ -267,13 +191,7 @@ void Player::DrawInterceptionLines() {
 			Debug::DrawLine(
 				myPos.x, myPos.y,
 				oppPos.x, oppPos.y,
-				sf::Color(255, 0, 0, 128) 
-			);
-
-			Debug::DrawCircle(
-				myPos.x, myPos.y,
-				Constant::INTERCEPTION_RANGE,
-				sf::Color(255, 0, 0, 64) 
+				sf::Color(255, 255, 0, 128) 
 			);
 		}
 	}
@@ -311,4 +229,168 @@ void Player::DrawPassingTrajectory(const sf::Vector2f& target) {
 		Debug::DrawLine(end.x, end.y, arrow1.x, arrow1.y, sf::Color(0, 255, 255, 180));
 		Debug::DrawLine(end.x, end.y, arrow2.x, arrow2.y, sf::Color(0, 255, 255, 180));
 	}
+}
+
+void Player::HandleBallCarrierBehavior(const std::vector<Player*>& opposingTeam) {
+	sf::Vector2f currentPos = GetPosition();
+	float goalX = mTeamSide == 0 ?
+		GetScene()->GetWindowWidth() - Constant::GOAL_LINE_MARGIN :
+		Constant::GOAL_LINE_MARGIN;
+
+	Player* nearestOpponent = nullptr;
+	float minDistance = FLT_MAX;
+
+	for (Player* opponent : opposingTeam) {
+		if (opponent->IsInvincible()) continue;
+
+		float dist = std::hypot(
+			opponent->GetPosition().x - currentPos.x,
+			opponent->GetPosition().y - currentPos.y
+		);
+
+		if (dist < minDistance) {
+			minDistance = dist;
+			nearestOpponent = opponent;
+		}
+	}
+
+	bool nearGoal = mTeamSide == 0 ?
+		(currentPos.x > GetScene()->GetWindowWidth() - Constant::GOAL_LINE_MARGIN * 3) :
+		(currentPos.x < Constant::GOAL_LINE_MARGIN * 3);
+
+	if (!nearGoal && nearestOpponent && minDistance < Constant::INTERCEPTION_RANGE && CanMakePass()) {
+		Player* passTarget = FindBestPassTarget();
+		if (passTarget) {
+			GiveBall(passTarget, mCurrentHolder);
+			return;
+		}
+	}
+
+	float targetX;
+	float targetY = currentPos.y;
+
+	if (nearGoal) {
+		targetX = goalX;
+	}
+	else {
+		targetX = mTeamSide == 0 ?
+			std::min(goalX, currentPos.x + Constant::PLAYER_RADIUS * 2) :
+			std::max(goalX, currentPos.x - Constant::PLAYER_RADIUS * 2);
+
+		if (nearestOpponent) {
+			sf::Vector2f opponentPos = nearestOpponent->GetPosition();
+			bool opponentInFront = (mTeamSide == 0) ?
+				(opponentPos.x > currentPos.x) :
+				(opponentPos.x < currentPos.x);
+
+			if (minDistance < Constant::INTERCEPTION_RANGE * 1.5f && opponentInFront) {
+				float yDiff = opponentPos.y - currentPos.y;
+				if (abs(yDiff) < Constant::PLAYER_RADIUS * 2) {
+					targetY = opponentPos.y > currentPos.y ?
+						std::max(mZoneMinY, currentPos.y - Constant::PLAYER_RADIUS * 2) :
+						std::min(mZoneMaxY, currentPos.y + Constant::PLAYER_RADIUS * 2);
+				}
+			}
+		}
+	}
+
+	targetY = std::clamp(targetY, mZoneMinY, mZoneMaxY);
+
+	GoToPosition(targetX, targetY);
+}
+
+void Player::HandleSupportingBehavior(Player* ballCarrier) {
+	sf::Vector2f currentPos = GetPosition();
+	sf::Vector2f carrierPos = ballCarrier->GetPosition();
+	MatchScene* matchScene = dynamic_cast<MatchScene*>(GetScene());
+
+	std::vector<Player*> teammates = mTeamSide == 0 ?
+		matchScene->GetGreenTeam() : matchScene->GetRedTeam();
+
+	float baseX;
+	if (mTeamSide == 0) {  
+		baseX = std::min(
+			carrierPos.x - Constant::PLAYER_RADIUS * 3,
+			GetScene()->GetWindowWidth() - Constant::GOAL_LINE_MARGIN);
+	}
+	else {  
+		baseX = std::max(
+			carrierPos.x + Constant::PLAYER_RADIUS * 3,  
+			Constant::GOAL_LINE_MARGIN  
+		);
+	}
+
+	float minSpacing = Constant::PLAYER_RADIUS * 3;
+	float targetY = carrierPos.y;
+	bool isAbove = false;
+
+	int teammatesAbove = 0;
+	int teammatesBelow = 0;
+	for (Player* teammate : teammates) {
+		if (teammate != this && teammate != ballCarrier) {
+			if (teammate->GetPosition().y < carrierPos.y) teammatesAbove++;
+			else teammatesBelow++;
+		}
+	}
+
+	if (teammatesAbove <= teammatesBelow) {
+		targetY = carrierPos.y - minSpacing * (teammatesAbove + 1);
+		isAbove = true;
+	}
+	else {
+		targetY = carrierPos.y + minSpacing * teammatesBelow;
+	}
+
+	targetY = std::clamp(targetY, mZoneMinY, mZoneMaxY);
+
+	GoToPosition(baseX, targetY);
+}
+
+void Player::HandleDefensiveBehavior(Player* ballCarrier) {
+	sf::Vector2f currentPos = GetPosition();
+	sf::Vector2f ballPos = ballCarrier->GetPosition();
+
+	float interceptX = ballPos.x;
+	float interceptY = ballPos.y;
+
+	if (mTeamSide == 0) {
+		interceptX = std::max(ballPos.x - Constant::PLAYER_RADIUS * 3,
+			Constant::GOAL_LINE_MARGIN);
+		if (currentPos.x < ballPos.x) {
+			interceptX = currentPos.x + Constant::PLAYER_RADIUS * 2;
+		}
+	}
+	else { 
+		interceptX = std::min(ballPos.x + Constant::PLAYER_RADIUS * 3,
+			GetScene()->GetWindowWidth() - Constant::GOAL_LINE_MARGIN);
+		if (currentPos.x > ballPos.x) {
+			interceptX = currentPos.x - Constant::PLAYER_RADIUS * 2;
+		}
+	}
+
+	float yDiff = ballPos.y - currentPos.y;
+	if (abs(yDiff) > Constant::PLAYER_RADIUS * 2) {
+		interceptY = currentPos.y + (yDiff > 0 ? 1 : -1) * Constant::PLAYER_RADIUS * 2;
+	}
+
+	interceptY = std::clamp(interceptY, mZoneMinY, mZoneMaxY);
+
+	GoToPosition(interceptX, interceptY);
+}
+
+void Player::HandleFreeBallBehavior(Ball* ball) {
+	sf::Vector2f ballPos = ball->GetPosition();
+
+	if (ballPos.y >= mZoneMinY && ballPos.y <= mZoneMaxY) {
+		GoToPosition(ballPos.x, ballPos.y);
+	}
+}
+
+void Player::ResetStates() {
+	mHasBall = false;
+	mCurrentHolder = nullptr;
+	mInvincibilityTimer = 0.0f;
+	mPassCooldownTimer = 0.0f;
+	mSpeedBoostTimer = 0.0f;
+	SetSpeed(Constant::PLAYER_SPEED);
 }

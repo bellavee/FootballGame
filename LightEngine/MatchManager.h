@@ -9,6 +9,7 @@ public:
 	void Update();
 	void CheckBallPossession();
 	void CheckScoring();
+	void ResetAfterScoring(int teamToReceiveBall);
 	void ResetPositions();
 
 	int GetGreenScore() const { return mGreenScore; }
@@ -23,6 +24,8 @@ private:
 	int mGreenScore;
 	int mRedScore;
 	bool mIsPlaying;
+
+	float mScoringCooldown = 0.0f;
 
 };
 

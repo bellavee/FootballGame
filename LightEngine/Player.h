@@ -25,15 +25,20 @@ public:
 	void LoseBall(Ball* ball);
 	void GiveBall(Player* player, Ball* ball);
 
-	void DrawDebugInfo(bool isSelected = false);
 	void DrawInterceptionLines();
 	void DrawPassingTrajectory(const sf::Vector2f& target);
 
+	void ResetStates();
+
+	Player* FindBestPassTarget();
 
 private:
-	Player* FindBestPassTarget();
-	void MoveTowardGoal();
 	bool IsOpponentBlockingPass(const sf::Vector2f& from, const sf::Vector2f& to, const sf::Vector2f& oppPos);
+
+	void HandleBallCarrierBehavior(const std::vector<Player*>& opposingTeam);
+	void HandleSupportingBehavior(Player* ballCarrier);
+	void HandleDefensiveBehavior(Player* ballCarrier);
+	void HandleFreeBallBehavior(Ball* ball);
 
 private:
 	int mTeamSide;
