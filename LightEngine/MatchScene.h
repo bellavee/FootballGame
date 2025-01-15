@@ -15,6 +15,7 @@ public:
 
 	const std::vector<Player*>& GetGreenTeam() const { return mGreenTeam; }
 	const std::vector<Player*>& GetRedTeam() const { return mRedTeam; }
+	Ball* GetBall() const { return mBall; }
 
 private:
 	void CreatePlayers();
@@ -31,6 +32,9 @@ private:
 
 	sf::RectangleShape mLeftGoalLine;
 	sf::RectangleShape mRightGoalLine;
-	MatchManager* mMatchManager;
+	MatchManager* mMatchManager = nullptr;
+
+	bool mDebugMode = false;
+	bool mShowPassTrajectory = false;
 };
 
