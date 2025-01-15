@@ -19,5 +19,4 @@ namespace Constant {
 	static constexpr float INTERCEPTION_RANGE = 150.0f;
 	static constexpr float PASS_TRAJECTORY_LENGTH = 300.0f;
 
-	constexpr int BALL_TAG = 1;
 }
