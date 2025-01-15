@@ -8,17 +8,49 @@ void MatchScene::OnInitialize() {
     CreatePlayers();
 
     mBall = CreateEntity<Ball>(Constant::BALL_RADIUS, sf::Color::Yellow);
+
+    mBall->SetPosition(GetWindowWidth() / 2.0f, GetWindowHeight() / 2.0f);
+
     mMatchManager = new MatchManager(&mGreenTeam, &mRedTeam, this, mBall);
+
+    int randomIndex = rand() % mGreenTeam.size();
+    mGreenTeam[randomIndex]->HoldBall(mBall);
 }
 
 void MatchScene::OnEvent(const sf::Event& event) {
-
+    if (event.type == sf::Event::KeyPressed) {
+        if (event.key.code == sf::Keyboard::F1) {
+            mDebugMode = !mDebugMode; 
+            mShowPassTrajectory = !mShowPassTrajectory;
+        }
+    }
 }
 
 void MatchScene::OnUpdate() {
     mMatchManager->Update();
     DrawGoalLines();
-	DrawZones();
+
+    if (mDebugMode) {
+        DrawZones();
+
+        for (Player* player : mGreenTeam) {
+            player->DrawInterceptionLines();
+            if (player->HasBall() && mShowPassTrajectory) {
+                if (Player* target = player->FindBestPassTarget()) {
+                    player->DrawPassingTrajectory(target->GetPosition());
+                }
+            }
+        }
+
+        for (Player* player : mRedTeam) {
+            player->DrawInterceptionLines();
+            if (player->HasBall() && mShowPassTrajectory) {
+                if (Player* target = player->FindBestPassTarget()) {
+                    player->DrawPassingTrajectory(target->GetPosition());
+                }
+            }
+        }
+    }
 }
 
 void MatchScene::CreatePlayers() {
@@ -79,10 +111,10 @@ void MatchScene::DrawGoalLines() {
         sf::Color::White
     );
 
-    std::string scoreText = "Score: " +
-        std::to_string(mMatchManager->GetGreenScore()) + " - " +
-        std::to_string(mMatchManager->GetRedScore());
-    Debug::DrawText(GetWindowWidth() / 2.0f, 10.0f, scoreText, 0.5f, 0.0f, sf::Color::White);
+    std::string scoreText = "Green " + std::to_string(mMatchManager->GetGreenScore()) +
+        " - " +
+        std::to_string(mMatchManager->GetRedScore()) + " Red";
+    Debug::DrawText(GetWindowWidth() / 2.0f, 30.0f, scoreText, 0.5f, 0.5f, sf::Color::Yellow);
 }
 
 void MatchScene::DrawZones() {
