@@ -29,30 +29,43 @@
     <ClCompile Include="MatchScene.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerAI.cpp" />
+    <ClCompile Include="PlayerAIActions.cpp" />
+    <ClCompile Include="PlayerAICondition.cpp" />
     <ClCompile Include="SampleScene.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Action.h" />
     <ClInclude Include="Ball.h" />
+    <ClInclude Include="Condition.h" />
     <ClInclude Include="Constant.h" />
     <ClInclude Include="Debug.h" />
     <ClInclude Include="DummyEntity.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="GameManager.h" />
+    <ClInclude Include="IdleState.h" />
     <ClInclude Include="MatchManager.h" />
     <ClInclude Include="MatchScene.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerAI.h" />
+    <ClInclude Include="PlayerAIActions.h" />
+    <ClInclude Include="PlayerAICondition.h" />
     <ClInclude Include="PlayerState.h" />
     <ClInclude Include="SampleScene.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="StateMachine.h" />
+    <ClInclude Include="Transition.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Action.inl" />
+    <None Include="Condition.inl" />
     <None Include="Entity.inl" />
     <None Include="GameManager.inl" />
     <None Include="Scene.inl" />
+    <None Include="StateMachine.inl" />
+    <None Include="Transition.inl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
