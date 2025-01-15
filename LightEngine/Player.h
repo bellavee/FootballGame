@@ -18,9 +18,22 @@ public:
 		mZoneMaxY = maxY;
 	}
 
+	bool CanMakePass() const { return mPassCooldownTimer <= 0.0f; }
+	bool IsInvincible() const { return mInvincibilityTimer > 0.0f; }
+
 	void HoldBall(Ball* ball);
 	void LoseBall(Ball* ball);
 	void GiveBall(Player* player, Ball* ball);
+
+	void DrawDebugInfo(bool isSelected = false);
+	void DrawInterceptionLines();
+	void DrawPassingTrajectory(const sf::Vector2f& target);
+
+
+private:
+	Player* FindBestPassTarget();
+	void MoveTowardGoal();
+	bool IsOpponentBlockingPass(const sf::Vector2f& from, const sf::Vector2f& to, const sf::Vector2f& oppPos);
 
 private:
 	int mTeamSide;
@@ -29,5 +42,14 @@ private:
 	float mZoneMaxY;
 	bool mMovingUp;
 
+	float mPossessionTimer = 0.0f;
+	float mInvincibilityTimer = 0.0f;
+	float mPassCooldownTimer = 0.0f;
+	float mSpeedBoostTimer = 0.0f;
+	float mBaseSpeed = 150.0f;
+	float mBoostSpeed = 250.0f;
+
+	Ball* mCurrentHolder = nullptr;
 };
+
 

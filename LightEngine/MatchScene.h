@@ -16,6 +16,10 @@ public:
 	const std::vector<Player*>& GetGreenTeam() const { return mGreenTeam; }
 	const std::vector<Player*>& GetRedTeam() const { return mRedTeam; }
 
+	sf::Vector2f GetMouseWorldPosition() const {
+		return sf::Vector2f(sf::Mouse::getPosition().x, sf::Mouse::getPosition().y);
+	}
+
 private:
 	void CreatePlayers();
 	void DrawGoalLines();
@@ -31,6 +35,10 @@ private:
 
 	sf::RectangleShape mLeftGoalLine;
 	sf::RectangleShape mRightGoalLine;
-	MatchManager* mMatchManager;
+	MatchManager* mMatchManager = nullptr;
+
+	bool mDebugMode = false;
+	bool mShowPassTrajectory = false;
+	Player* mSelectedPlayer = nullptr;
 };
 

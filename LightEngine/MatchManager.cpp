@@ -14,7 +14,33 @@ void MatchManager::Update() {
 }
 
 void MatchManager::CheckBallPossession() {
+    Player* ballCarrier = mBall->GetCurrentHolder();
+    if (!ballCarrier) return;
 
+    std::vector<Player*>& opposingTeam =
+        (ballCarrier->GetTeam() == 0) ? *mRedTeam : *mGreenTeam;
+
+    for (Player* opponent : opposingTeam) {
+        if (opponent->IsColliding(ballCarrier) 
+            && opponent->CanMakePass() 
+            && !opponent->IsInvincible()) {
+            opponent->HoldBall(mBall);
+            
+            sf::Vector2f pos1 = ballCarrier->GetPosition();
+            sf::Vector2f pos2 = opponent->GetPosition();
+            sf::Vector2f direction = pos1 - pos2;
+            float length = std::hypot(direction.x, direction.y);
+            if (length > 0) {
+                direction.x /= length;
+                direction.y /= length;
+                ballCarrier->SetPosition(
+                    pos1.x + direction.x * 5.0f,
+                    pos1.y + direction.y * 5.0f
+                );
+            }
+            break;
+        }
+    }
 }
 
 void MatchManager::CheckScoring() {

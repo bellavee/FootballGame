@@ -12,13 +12,66 @@ void MatchScene::OnInitialize() {
 }
 
 void MatchScene::OnEvent(const sf::Event& event) {
+    if (event.type == sf::Event::KeyPressed) {
+        if (event.key.code == sf::Keyboard::F1) {
+            mDebugMode = !mDebugMode; 
+        }
+        if (event.key.code == sf::Keyboard::F2) {
+            mShowPassTrajectory = !mShowPassTrajectory; 
+        }
+    }
 
+    if (event.type == sf::Event::MouseButtonPressed) {
+        if (event.mouseButton.button == sf::Mouse::Left) {
+            sf::Vector2f mousePos(event.mouseButton.x, event.mouseButton.y);
+
+            for (Player* player : mGreenTeam) {
+                if (player->IsInside(mousePos.x, mousePos.y)) {
+                    mSelectedPlayer = player;
+                    return;
+                }
+            }
+
+            for (Player* player : mRedTeam) {
+                if (player->IsInside(mousePos.x, mousePos.y)) {
+                    mSelectedPlayer = player;
+                    return;
+                }
+            }
+
+            mSelectedPlayer = nullptr; 
+        }
+    }
 }
 
 void MatchScene::OnUpdate() {
     mMatchManager->Update();
     DrawGoalLines();
-	DrawZones();
+    DrawZones();
+
+    if (mDebugMode) {
+        sf::Vector2f mousePos = GetMouseWorldPosition();
+
+        for (Player* player : mGreenTeam) {
+            player->DrawDebugInfo(player == mSelectedPlayer); 
+            if (player == mSelectedPlayer) {
+                player->DrawInterceptionLines();
+                if (player->HasBall() && mShowPassTrajectory) {
+                    player->DrawPassingTrajectory(mousePos);
+                }
+            }
+        }
+
+        for (Player* player : mRedTeam) {
+            player->DrawDebugInfo(player == mSelectedPlayer); 
+            if (player == mSelectedPlayer) {
+                player->DrawInterceptionLines();
+                if (player->HasBall() && mShowPassTrajectory) {
+                    player->DrawPassingTrajectory(mousePos);
+                }
+            }
+        }
+    }
 }
 
 void MatchScene::CreatePlayers() {
