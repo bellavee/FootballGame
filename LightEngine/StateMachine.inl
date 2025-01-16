@@ -1,5 +1,5 @@
 #include "StateMachine.h"
-
+#include "Entity.h"
 #include "Action.h"
 
 template<typename T>
@@ -26,6 +26,12 @@ void StateMachine<T>::SetState(int state)
 	mCurrentState = state;
 
 	mActions[mCurrentState]->OnStart(mOwner);
+}
+
+template<typename T>
+inline void StateMachine<T>::OnCollision(Entity* collidedWith)
+{
+	mActions[mCurrentState]->OnCollision(collidedWith);
 }
 
 template<typename T>

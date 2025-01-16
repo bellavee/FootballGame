@@ -4,9 +4,12 @@
 
 #include "Action.h"
 
+class Entity;
+
 template<typename T>
 class StateMachine
 {
+protected:
 	std::vector<Action<T>*> mActions;
 	int mCurrentState;
 
@@ -19,6 +22,7 @@ public:
 	void Update();
 	void SetState(int state);
 	int GetCurrentState() const { return mCurrentState; }
+	void OnCollision(Entity* collidedWith);
 
 	template<typename U>
 	U* CreateAction(int state);

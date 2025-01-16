@@ -37,9 +37,6 @@
     <ClCompile Include="Player.cpp">
       <Filter>Game</Filter>
     </ClCompile>
-    <ClCompile Include="PlayerAI.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
     <ClCompile Include="MatchScene.cpp">
       <Filter>Game</Filter>
     </ClCompile>
@@ -49,6 +46,9 @@
     <ClCompile Include="MatchManager.cpp">
       <Filter>Game</Filter>
     </ClCompile>
+    <ClCompile Include="PlayerAIActions.cpp" />
+    <ClCompile Include="PlayerAICondition.cpp" />
+    <ClCompile Include="PlayerStateMachine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -75,9 +75,6 @@
     <ClInclude Include="Player.h">
       <Filter>Game</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerAI.h">
-      <Filter>Game</Filter>
-    </ClInclude>
     <ClInclude Include="MatchScene.h">
       <Filter>Game</Filter>
     </ClInclude>
@@ -93,6 +90,14 @@
     <ClInclude Include="MatchManager.h">
       <Filter>Game</Filter>
     </ClInclude>
+    <ClInclude Include="Action.h" />
+    <ClInclude Include="Condition.h" />
+    <ClInclude Include="IdleState.h" />
+    <ClInclude Include="PlayerAIActions.h" />
+    <ClInclude Include="PlayerAICondition.h" />
+    <ClInclude Include="PlayerStateMachine.h" />
+    <ClInclude Include="StateMachine.h" />
+    <ClInclude Include="Transition.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Scene.inl">
@@ -104,5 +109,9 @@
     <None Include="Entity.inl">
       <Filter>Engine</Filter>
     </None>
+    <None Include="Action.inl" />
+    <None Include="Condition.inl" />
+    <None Include="StateMachine.inl" />
+    <None Include="Transition.inl" />
   </ItemGroup>
 </Project>

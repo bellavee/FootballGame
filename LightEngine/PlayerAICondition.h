@@ -1,10 +1,33 @@
 #pragma once
-#include "PlayerAI.h"
+#include "Player.h"
 #include "Condition.h"
 
-class PlayerAICondition : public Condition<PlayerAI>
+class PlayerCondition_JustHadBall : public Condition<Player>
 {
 public:
-	bool OnTest(PlayerAI* owner) override;
+	bool OnTest(Player* owner) override;
 };
 
+class PlayerCondition_HavingBall : public Condition<Player>
+{
+public:
+	bool OnTest(Player* owner) override;
+};
+
+class PlayerCondition_TeamMateHavingBall : public Condition<Player>
+{
+public:
+	bool OnTest(Player* owner) override;
+};
+
+class PlayerCondition_OpponentHavingBall : public Condition<Player>
+{
+public:
+	bool OnTest(Player* owner) override;
+};
+
+class PlayerCondition_CanMakePass : public Condition<Player>
+{
+public:
+	bool OnTest(Player* owner) override;
+};

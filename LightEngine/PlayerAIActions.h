@@ -1,44 +1,46 @@
 #pragma once
 
 #include "Action.h"
-#include "PlayerAI.h"
+#include "Constant.h"
+#include "Player.h"
 
-class PlayerAIAction_Idle : public Action<PlayerAI>
+class PlayerAction_Idle : public Action<Player>
 {
 public:
-	void OnStart(PlayerAI* player) override {}
-	void OnUpdate(PlayerAI* player) override {}
-	void OnEnd(PlayerAI* player) override {}
+	void OnStart(Player* player) override;
+	void OnUpdate(Player* player) override {}
+	void OnEnd(Player* player) override {}
+	void OnCollision(Player* player, Entity* collidedWith) override;
 };
 
-class PlayerAIAction_JustGotTheBall : public Action<PlayerAI>
+class PlayerAction_JustGotTheBall : public Action<Player>
 {
 public:
-	void OnStart(PlayerAI* player) override {}
-	void OnUpdate(PlayerAI* player) override {}
-	void OnEnd(PlayerAI* player) override {}
+	void OnStart(Player* player) override;
+	void OnUpdate(Player* player) override;
+	void OnEnd(Player* player) override;
 };
 
-class PlayerAIAction_HavingTheBall : public Action<PlayerAI>
+class PlayerAction_HavingTheBall : public Action<Player>
 {
 public:
-	void OnStart(PlayerAI* player) override {}
-	void OnUpdate(PlayerAI* player) override {}
-	void OnEnd(PlayerAI* player) override {}
+	void OnStart(Player* player) override {}
+	void OnUpdate(Player* player) override;
+	void OnEnd(Player* player) override {}
 };
 
-class PlayerAIAction_TeamMateHavingTheBall : public Action<PlayerAI>
+class PlayerAction_TeamMateHavingTheBall : public Action<Player>
 {
 public:
-	void OnStart(PlayerAI* player) override {}
-	void OnUpdate(PlayerAI* player) override {}
-	void OnEnd(PlayerAI* player) override {}
+	void OnStart(Player* player) override {}
+	void OnUpdate(Player* player) override;
+	void OnEnd(Player* player) override {}
 };
 
-class PlayerAIAction_OpponentHavingTheBall : public Action<PlayerAI>
+class PlayerAction_OpponentHavingTheBall : public Action<Player>
 {
 public:
-	void OnStart(PlayerAI* player) override {}
-	void OnUpdate(PlayerAI* player) override {}
-	void OnEnd(PlayerAI* player) override {}
+	void OnStart(Player* player) override {}
+	void OnUpdate(Player* player) override;
+	void OnEnd(Player* player) override {}
 };

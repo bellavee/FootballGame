@@ -14,7 +14,8 @@ void MatchScene::OnInitialize() {
     mMatchManager = new MatchManager(&mGreenTeam, &mRedTeam, this, mBall);
 
     int randomIndex = rand() % mGreenTeam.size();
-    mGreenTeam[randomIndex]->HoldBall(mBall);
+    //mGreenTeam[randomIndex]->HoldBall(mBall);
+    mGreenTeam[randomIndex]->GetStateMachine()->SetState(Player::PlayerState::JustGotTheBall);
 }
 
 void MatchScene::OnEvent(const sf::Event& event) {

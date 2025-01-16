@@ -17,7 +17,7 @@ void MatchManager::Update() {
 }
 
 void MatchManager::CheckBallPossession() {
-    Player* ballCarrier = mBall->GetCurrentHolder();
+   /* Player* ballCarrier = mBall->GetCurrentHolder();
     if (!ballCarrier) return;
 
     std::vector<Player*>& opposingTeam =
@@ -27,7 +27,7 @@ void MatchManager::CheckBallPossession() {
         if (opponent->IsColliding(ballCarrier) 
             && opponent->CanMakePass() 
             && !opponent->IsInvincible()) {
-            opponent->HoldBall(mBall);
+            opponent->HoldBall();
             
             sf::Vector2f pos1 = ballCarrier->GetPosition();
             sf::Vector2f pos2 = opponent->GetPosition();
@@ -43,7 +43,7 @@ void MatchManager::CheckBallPossession() {
             }
             break;
         }
-    }
+    }*/
 }
 
 void MatchManager::CheckScoring() {
@@ -83,8 +83,8 @@ void MatchManager::ResetAfterScoring(int teamToReceiveBall) {
     mBall->SetCurrentHolder(nullptr);
 
     sf::sleep(sf::milliseconds(100));
-
-    selectedPlayer->HoldBall(mBall);
+    selectedPlayer->GetStateMachine()->SetState(Player::PlayerState::JustGotTheBall);
+   // selectedPlayer->HoldBall();
 
     sf::Vector2f playerPos = selectedPlayer->GetPosition();
     mBall->SetPosition(playerPos.x, playerPos.y);
@@ -115,7 +115,7 @@ void MatchManager::ResetPositions() {
             greenPositions[i].x,
             greenPositions[i].y
         );
-        (*mGreenTeam)[i]->ResetStates();
+        (*mGreenTeam)[i]->GetStateMachine()->SetState(Player::PlayerState::Idle);
     }
 
     for (size_t i = 0; i < mRedTeam->size(); i++) {
@@ -123,6 +123,6 @@ void MatchManager::ResetPositions() {
             redPositions[i].x,
             redPositions[i].y
         );
-        (*mRedTeam)[i]->ResetStates();
+        (*mRedTeam)[i]->GetStateMachine()->SetState(Player::PlayerState::Idle);
     }
 }

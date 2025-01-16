@@ -28,9 +28,9 @@
     <ClCompile Include="MatchManager.cpp" />
     <ClCompile Include="MatchScene.cpp" />
     <ClCompile Include="Player.cpp" />
-    <ClCompile Include="PlayerAI.cpp" />
     <ClCompile Include="PlayerAIActions.cpp" />
     <ClCompile Include="PlayerAICondition.cpp" />
+    <ClCompile Include="PlayerStateMachine.cpp" />
     <ClCompile Include="SampleScene.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Utils.cpp" />
@@ -48,10 +48,10 @@
     <ClInclude Include="MatchManager.h" />
     <ClInclude Include="MatchScene.h" />
     <ClInclude Include="Player.h" />
-    <ClInclude Include="PlayerAI.h" />
     <ClInclude Include="PlayerAIActions.h" />
     <ClInclude Include="PlayerAICondition.h" />
     <ClInclude Include="PlayerState.h" />
+    <ClInclude Include="PlayerStateMachine.h" />
     <ClInclude Include="SampleScene.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="StateMachine.h" />

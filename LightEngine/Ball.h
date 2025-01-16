@@ -1,7 +1,7 @@
 #pragma once
 #include "Entity.h"
+#include "Player.h"
 
-class Player;
 
 class Ball : public Entity
 {
@@ -10,6 +10,7 @@ public:
 	void MoveTo(Player* player);
 
 	Player* GetCurrentHolder() const { return mCurrentHolder; }
+	int GetCurrentHolderTeam() { return mCurrentHolder->GetTeam(); }
 	void SetCurrentHolder(Player* player) { mCurrentHolder = player; }
 
 private:

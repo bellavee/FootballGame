@@ -1,5 +1,5 @@
 #pragma once
-
+#include "Entity.h"
 #include <vector>
 
 template<typename T>
@@ -22,6 +22,7 @@ protected:
 	virtual void OnStart(T* pOwner) = 0;
 	virtual void OnUpdate(T* pOwner) = 0;
 	virtual void OnEnd(T* pOwner) = 0;
+	virtual void OnCollision(T* pOwner, Entity* collidedWith) {}
 
 	template<typename T>
 	friend class StateMachine;
