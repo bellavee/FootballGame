@@ -10,7 +10,7 @@ public:
 	void MoveTo(Player* player);
 
 	Player* GetCurrentHolder() const { return mCurrentHolder; }
-	int GetCurrentHolderTeam() { return mCurrentHolder->GetTeam(); }
+	int GetCurrentHolderTeam() { return (mCurrentHolder) ?  mCurrentHolder->GetTeam() : -1; }
 	void SetCurrentHolder(Player* player) { mCurrentHolder = player; }
 
 private:

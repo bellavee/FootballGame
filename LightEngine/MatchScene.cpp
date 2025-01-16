@@ -15,7 +15,7 @@ void MatchScene::OnInitialize() {
 
     int randomIndex = rand() % mGreenTeam.size();
     //mGreenTeam[randomIndex]->HoldBall(mBall);
-    //mGreenTeam[randomIndex]->GiveBall();
+    mGreenTeam[randomIndex]->GiveBall();
     //mGreenTeam[randomIndex]->GetStateMachine()->SetState(Player::PlayerState::JustGotTheBall);
 
 }

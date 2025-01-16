@@ -26,7 +26,7 @@ public:
 	bool OnTest(Player* owner) override;
 };
 
-class PlayerCondition_CanMakePass : public Condition<Player>
+class PlayerCondition_CanPassBall : public Condition<Player>
 {
 public:
 	bool OnTest(Player* owner) override;

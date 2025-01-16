@@ -28,7 +28,7 @@ void Player::OnUpdate() {
 	sf::Vector2f pos = GetPosition();
 	if (pos.y < mZoneMinY) SetPosition(pos.x, mZoneMinY);
 	if (pos.y > mZoneMaxY) SetPosition(pos.x, mZoneMaxY);
-	Debug::DrawText(GetPosition(0, 0).x, GetPosition(0, 0).y, GetPlayerState(), sf::Color::White);
+	Debug::DrawText(GetPosition(0, 0).x, GetPosition(0, 0).y - 50, GetPlayerState(), sf::Color::White);
 }
 
 void Player::OnCollision(Entity* collidedWith) {
@@ -41,8 +41,11 @@ void Player::OnCollision(Entity* collidedWith) {
 
 int Player::GetPlayerWithBallTeam()
 {
+	int res = -1;
 	MatchScene* matchScene = static_cast<MatchScene*>(GetScene());
-	return matchScene->GetBall()->GetCurrentHolderTeam();
+	if (matchScene->GetBall())
+		res = matchScene->GetBall()->GetCurrentHolderTeam();
+	return res;
 }
 
 void Player::HoldBall() {
@@ -405,13 +408,13 @@ std::string Player::GetPlayerState()
 	case PlayerState::Idle:
 		return "Idle";
 	case PlayerState::JustGotTheBall:
-		return "JustGotTheBall";
+		return "JustGot\nBall";
 	case PlayerState::HavingTheBall:
-		return "HavingTheBall";
+		return "Having\nBall";
 	case PlayerState::TeamMateHavingTheBall: 
-		return "TeamMateHavingTheBall";
+		return "TeamMate\nHadBall";
 	case PlayerState::OpponentHavingTheBall:
-		return "OpponentHavingTheBall";
+		return "Opponent\nHadBall";
 	default:
 		return "Unknown";
 	};
@@ -425,8 +428,10 @@ void Player::InitializeStateMachine()
 	auto transitionIdleJustHadBall = idle->CreateTransition(PlayerState::JustGotTheBall);
 	transitionIdleJustHadBall->AddCondition<PlayerCondition_HavingBall>();
 	transitionIdleJustHadBall->AddCondition<PlayerCondition_IsNotInvincible>();
-	/*auto transitionIdleTeamMateHadBall = idle->CreateTransition(PlayerState::TeamMateHavingTheBall);
-	auto transitionIdleOpponentHadBall = idle->CreateTransition(PlayerState::OpponentHavingTheBall);*/
+	auto transitionIdleTeamMateHadBall = idle->CreateTransition(PlayerState::TeamMateHavingTheBall);
+	transitionIdleTeamMateHadBall->AddCondition<PlayerCondition_TeamMateHavingBall>();
+	auto transitionIdleOpponentHadBall = idle->CreateTransition(PlayerState::OpponentHavingTheBall);
+	transitionIdleOpponentHadBall->AddCondition<PlayerCondition_OpponentHavingBall>();
 	//transitionIdleJustHadBall
 	/*transitionIdleOpponentHadBall->AddCondition<PlayerCondition_OpponentHavingBall>();
 	transitionIdleTeamMateHadBall->AddCondition<PlayerCondition_TeamMateHavingBall>();*/
