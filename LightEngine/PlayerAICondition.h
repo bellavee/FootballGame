@@ -31,3 +31,9 @@ class PlayerCondition_CanPassBall : public Condition<Player>
 public:
 	bool OnTest(Player* owner) override;
 };
+
+class PlayerCondition_IsBooted : public Condition<Player>
+{
+public:
+	bool OnTest(Player * owner) override;
+};

@@ -33,6 +33,7 @@ public:
 
 	bool CanMakePass() const { return mPassCooldownTimer <= 0.0f; }
 	bool IsInvincible() const { return mInvincibilityTimer > 0.0f; }
+	bool IsBoosted() { return mSpeedBoostTimer > 0.0f; }
 
 	void HoldBall();
 	void LoseBall(Ball* ball);

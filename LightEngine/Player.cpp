@@ -432,16 +432,15 @@ void Player::InitializeStateMachine()
 	transitionIdleTeamMateHadBall->AddCondition<PlayerCondition_TeamMateHavingBall>();
 	auto transitionIdleOpponentHadBall = idle->CreateTransition(PlayerState::OpponentHavingTheBall);
 	transitionIdleOpponentHadBall->AddCondition<PlayerCondition_OpponentHavingBall>();
-	//transitionIdleJustHadBall
-	/*transitionIdleOpponentHadBall->AddCondition<PlayerCondition_OpponentHavingBall>();
-	transitionIdleTeamMateHadBall->AddCondition<PlayerCondition_TeamMateHavingBall>();*/
-	// add condition
 
 	/* JustGotTheBall */
 	Action<Player>* justGotTheBall = m_stateMachine->CreateAction<PlayerAction_JustGotTheBall>(PlayerState::JustGotTheBall);
-	/*auto transitionJustGotTheBallHavingBall = justGotTheBall->CreateTransition(PlayerState::HavingTheBall);
-	transitionJustGotTheBallHavingBall->AddCondition<PlayerCondition_CanMakePass>();
-	transitionJustGotTheBallHavingBall->AddCondition<PlayerCondition_HavingBall>();*/
+	auto transitionJustGotTheBallHavingBall = justGotTheBall->CreateTransition(PlayerState::HavingTheBall);
+	transitionJustGotTheBallHavingBall->AddCondition<PlayerCondition_HavingBall>();
+	transitionJustGotTheBallHavingBall->AddCondition<PlayerCondition_IsNotInvincible>();
+	transitionJustGotTheBallHavingBall->AddCondition<PlayerCondition_CanPassBall>();
+	transitionJustGotTheBallHavingBall->AddCondition<PlayerCondition_IsBooted>(false);
+
 
 	/* HavingBall */
 	Action<Player>* havingTheBall = m_stateMachine->CreateAction<PlayerAction_HavingTheBall>(PlayerState::HavingTheBall);

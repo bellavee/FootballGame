@@ -26,3 +26,8 @@ bool PlayerCondition_CanPassBall::OnTest(Player* owner)
 {
 	return owner->CanMakePass();
 }
+
+bool PlayerCondition_IsBooted::OnTest(Player* owner)
+{
+	return owner->IsBoosted();
+}

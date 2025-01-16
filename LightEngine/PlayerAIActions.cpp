@@ -44,10 +44,6 @@ void PlayerAction_JustGotTheBall::OnUpdate(Player* player)
 	else {
 		player->SetSpeed(Constant::PLAYER_SPEED);
 	}
-
-	if (mInvincibilityTimer <= 0 && mPassCooldownTimer <= 0 && mSpeedBoostTimer <= 0) {
-		//player->GetStateMachine()->SetState(Player::PlayerState::HavingTheBall);
-	}
 }
 
 void PlayerAction_JustGotTheBall::OnEnd(Player* player)
