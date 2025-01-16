@@ -45,6 +45,7 @@ void PlayerAction_JustGotTheBall::OnUpdate(Player* player)
 	else {
 		player->SetSpeed(Constant::PLAYER_SPEED);
 	}
+
 }
 
 void PlayerAction_JustGotTheBall::OnEnd(Player* player)
@@ -63,7 +64,7 @@ void PlayerAction_HavingTheBall::OnUpdate(Player* player)
 	player->HandleHavingBall(passTarget);
 	if (!passTarget)
 		return;
-	///passTarget->GiveBall();
+	passTarget->GiveBall();
 
 	/*player->GetStateMachine()->SetState(Player::PlayerState::TeamMateHavingTheBall);
 	player->GetStateMachine()->SetState(Player::PlayerState::OpponentHavingTheBall);

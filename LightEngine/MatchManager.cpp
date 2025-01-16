@@ -69,8 +69,9 @@ void MatchManager::CheckScoring() {
 }
 
 void MatchManager::ResetAfterScoring(int teamToReceiveBall) {
-    std::cout << "reset" << std::endl;
-    
+    std::cout << "reset" << teamToReceiveBall <<  std::endl;
+    if (mBall->GetCurrentHolder())
+    mBall->GetCurrentHolder()->LoseBall(mBall);
     ResetPositions();
 
     std::vector<Player*>& receivingTeam = (teamToReceiveBall == 0) ? *mGreenTeam : *mRedTeam;

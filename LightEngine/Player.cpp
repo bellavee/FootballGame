@@ -395,9 +395,10 @@ void Player::HandleFreeBallBehavior() {
 }
 
 void Player::ResetStates() {
+	if (mHasBall)
+		return;
 	mHasBall = false;
 	mIsResetLaunched = true;
-	mBall->SetCurrentHolder(nullptr);
 	mInvincibilityTimer = 0.0f;
 	mPassCooldownTimer = 0.0f;
 	mSpeedBoostTimer = 0.0f;
