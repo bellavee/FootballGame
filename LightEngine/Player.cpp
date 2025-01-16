@@ -22,21 +22,39 @@ void Player::OnInitialize() {
 
 void Player::OnUpdate() {
 	float dt = GetDeltaTime();
-	if (!mBall)
-		mBall = static_cast<MatchScene*>(GetScene())->GetBall();
+
+	if (mInvincibilityTimer > 0) {
+		mInvincibilityTimer -= dt;
+	}
+
+	if (mPassCooldownTimer > 0) {
+		mPassCooldownTimer -= dt;
+	}
+
+	if (mSpeedBoostTimer > 0) {
+		mSpeedBoostTimer -= dt;
+		SetSpeed(Constant::PLAYER_SPEED * 1.5f);
+	}
+	else {
+		SetSpeed(Constant::PLAYER_SPEED);
+	}
+
+	if (!mBall) mBall = static_cast<MatchScene*>(GetScene())->GetBall();
+
 	m_stateMachine->Update();
 	sf::Vector2f pos = GetPosition();
 	if (pos.y < mZoneMinY) SetPosition(pos.x, mZoneMinY);
 	if (pos.y > mZoneMaxY) SetPosition(pos.x, mZoneMaxY);
 	Debug::DrawText(GetPosition(0, 0).x, GetPosition(0, 0).y - 50, GetPlayerState(), sf::Color::White);
+	Debug::DrawText(GetPosition(0, 0).x, GetPosition(0, 0).y - 70, std::to_string(GetPassCooldownTimer()), sf::Color::White);
 }
 
 void Player::OnCollision(Entity* collidedWith) {
-	/*if (Ball* ball = dynamic_cast<Ball*>(collidedWith)) {
-		if (ball->GetCurrentHolder() == nullptr) {
-			HoldBall(ball);
+	if (Ball* ball = dynamic_cast<Ball*>(collidedWith)) {
+		if (CanMakePass()) {
+			HoldBall();
 		}
-	}*/
+	}
 }
 
 int Player::GetPlayerWithBallTeam()
@@ -54,7 +72,7 @@ void Player::HoldBall() {
 		currentHolder->LoseBall(ball);
 	}
 
-	//mHasBall = true;
+	mHasBall = true;
 	//mCurrentHolder = ball;
 	ball->SetCurrentHolder(this);
 	ball->MoveTo(this); // new
@@ -65,7 +83,7 @@ void Player::HoldBall() {
 }
 
 void Player::LoseBall(Ball* ball) {
-	//mHasBall = false;
+	mHasBall = false;
 	//mCurrentHolder = nullptr;
 	if (ball->GetCurrentHolder() == this) {
 		ball->SetCurrentHolder(nullptr);
@@ -73,7 +91,7 @@ void Player::LoseBall(Ball* ball) {
 }
 
 void Player::GiveBall(Player* player, Ball* ball) {
-	if (!player->IsInvincible() && player->CanMakePass()) {
+	if (!player->IsInvincible() && player->CanMakePass() && !HasBall()) {
 		LoseBall(ball);
 		ball->MoveTo(player);
 		ball->SetCurrentHolder(player);
@@ -252,8 +270,8 @@ void Player::HandleBallCarrierBehavior(const std::vector<Player*>& opposingTeam,
 	if (!nearGoal && nearestOpponent && minDistance < Constant::INTERCEPTION_RANGE && CanMakePass()) {
 		passTarget = FindBestPassTarget();
 		if (passTarget) {
-			LoseBall(mBall);
-			//GiveBall(passTarget, mCurrentHolder);
+			//LoseBall(mBall);
+			GiveBall(passTarget, mBall);
 			return;
 		}
 	}
@@ -428,8 +446,10 @@ void Player::InitializeStateMachine()
 	auto transitionIdleJustHadBall = idle->CreateTransition(PlayerState::JustGotTheBall);
 	transitionIdleJustHadBall->AddCondition<PlayerCondition_HavingBall>();
 	transitionIdleJustHadBall->AddCondition<PlayerCondition_IsNotInvincible>();
+
 	auto transitionIdleTeamMateHadBall = idle->CreateTransition(PlayerState::TeamMateHavingTheBall);
 	transitionIdleTeamMateHadBall->AddCondition<PlayerCondition_TeamMateHavingBall>();
+
 	auto transitionIdleOpponentHadBall = idle->CreateTransition(PlayerState::OpponentHavingTheBall);
 	transitionIdleOpponentHadBall->AddCondition<PlayerCondition_OpponentHavingBall>();
 	//transitionIdleJustHadBall
@@ -439,30 +459,50 @@ void Player::InitializeStateMachine()
 
 	/* JustGotTheBall */
 	Action<Player>* justGotTheBall = m_stateMachine->CreateAction<PlayerAction_JustGotTheBall>(PlayerState::JustGotTheBall);
-	/*auto transitionJustGotTheBallHavingBall = justGotTheBall->CreateTransition(PlayerState::HavingTheBall);
-	transitionJustGotTheBallHavingBall->AddCondition<PlayerCondition_CanMakePass>();
-	transitionJustGotTheBallHavingBall->AddCondition<PlayerCondition_HavingBall>();*/
+	auto transitionJustGotTheBallHavingBall = justGotTheBall->CreateTransition(PlayerState::HavingTheBall);
+	//transitionJustGotTheBallHavingBall->AddCondition<PlayerCondition_CanPassBall>();
+	transitionJustGotTheBallHavingBall->AddCondition<PlayerCondition_HavingBall>();
+
+	auto transitionJustGotTheBallTeamMateHavingBall = justGotTheBall->CreateTransition(PlayerState::TeamMateHavingTheBall);
+	transitionJustGotTheBallTeamMateHavingBall->AddCondition<PlayerCondition_TeamMateHavingBall>();
+
+	auto transitionJustGotTheBallOpponentHavingBall = justGotTheBall->CreateTransition(PlayerState::OpponentHavingTheBall);
+	transitionJustGotTheBallOpponentHavingBall->AddCondition<PlayerCondition_OpponentHavingBall>();
 
 	/* HavingBall */
 	Action<Player>* havingTheBall = m_stateMachine->CreateAction<PlayerAction_HavingTheBall>(PlayerState::HavingTheBall);
-	/*auto transitionHavingBallTeamMateHavingBall = havingTheBall->CreateTransition(PlayerState::TeamMateHavingTheBall);
-	auto transitionHavingBallOpponentHavingBall = havingTheBall->CreateTransition(PlayerState::OpponentHavingTheBall);
+	auto transitionHavingBallTeamMateHavingBall = havingTheBall->CreateTransition(PlayerState::TeamMateHavingTheBall);
 	transitionHavingBallTeamMateHavingBall->AddCondition<PlayerCondition_TeamMateHavingBall>();
-	transitionHavingBallOpponentHavingBall->AddCondition<PlayerCondition_CanMakePass>();
+
+	auto transitionHavingBallOpponentHavingBall = havingTheBall->CreateTransition(PlayerState::OpponentHavingTheBall);
 	transitionHavingBallOpponentHavingBall->AddCondition<PlayerCondition_OpponentHavingBall>();
-	transitionHavingBallTeamMateHavingBall->AddCondition<PlayerCondition_CanMakePass>();*/
 
 	/* TeamMateHavingTheBall */
 	Action<Player>* mateHavingTheBall = m_stateMachine->CreateAction<PlayerAction_TeamMateHavingTheBall>(PlayerState::TeamMateHavingTheBall);
-	/*auto transitionMateHavingBallJustGotBall = mateHavingTheBall->CreateTransition(PlayerState::JustGotTheBall);
+	auto transitionMateHavingBallJustGotBall = mateHavingTheBall->CreateTransition(PlayerState::JustGotTheBall);
+	transitionMateHavingBallJustGotBall->AddCondition<PlayerCondition_HavingBall>();
+	//transitionMateHavingBallJustGotBall->AddCondition<PlayerCondition_IsNotInvincible>();
+
 	auto transitionMateHavingBallOppGotBall = mateHavingTheBall->CreateTransition(PlayerState::OpponentHavingTheBall);
-	auto transitionMateHavingBallIdle = mateHavingTheBall->CreateTransition(PlayerState::Idle);*/
+	transitionMateHavingBallOppGotBall->AddCondition<PlayerCondition_OpponentHavingBall>();
+
+	auto transitionMateHavingBallIdle = mateHavingTheBall->CreateTransition(PlayerState::Idle);
+	transitionMateHavingBallIdle->AddCondition<PlayerCondition_TeamMateHavingBall>(false);
+	transitionMateHavingBallIdle->AddCondition<PlayerCondition_OpponentHavingBall>(false);
 
 	/* OppHavingTheBall */
 	Action<Player>* oppHavingTheBall = m_stateMachine->CreateAction<PlayerAction_OpponentHavingTheBall>(PlayerState::OpponentHavingTheBall);
-	/*auto transitionOppHavingBallJustGotBall = oppHavingTheBall->CreateTransition(PlayerState::JustGotTheBall);
+	auto transitionOppHavingBallJustGotBall = oppHavingTheBall->CreateTransition(PlayerState::JustGotTheBall);
+	transitionOppHavingBallJustGotBall->AddCondition<PlayerCondition_HavingBall>();
+	//transitionOppHavingBallJustGotBall->AddCondition<PlayerCondition_IsNotInvincible>();
+
 	auto transitionOppHavingBallMateGotBall = oppHavingTheBall->CreateTransition(PlayerState::TeamMateHavingTheBall);
-	auto transitionOppHavingBallIdle = oppHavingTheBall->CreateTransition(PlayerState::Idle);*/
+	transitionOppHavingBallMateGotBall->AddCondition<PlayerCondition_TeamMateHavingBall>();
+
+	auto transitionOppHavingBallIdle = oppHavingTheBall->CreateTransition(PlayerState::Idle);
+	transitionOppHavingBallIdle->AddCondition<PlayerCondition_TeamMateHavingBall>(false);
+	transitionOppHavingBallIdle->AddCondition<PlayerCondition_OpponentHavingBall>(false);
+
 
 	m_stateMachine->SetState(PlayerState::Idle);
 }

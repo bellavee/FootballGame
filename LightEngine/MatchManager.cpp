@@ -84,7 +84,7 @@ void MatchManager::ResetAfterScoring(int teamToReceiveBall) {
 
     sf::sleep(sf::milliseconds(100));
     //selectedPlayer->GetStateMachine()->SetState(Player::PlayerState::JustGotTheBall);
-   // selectedPlayer->HoldBall();
+	selectedPlayer->GiveBall();
 
     sf::Vector2f playerPos = selectedPlayer->GetPosition();
     mBall->SetPosition(playerPos.x, playerPos.y);

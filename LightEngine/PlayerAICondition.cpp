@@ -20,8 +20,6 @@ bool PlayerCondition_OpponentHavingBall::OnTest(Player* owner)
 	return (!owner->HasBall() && (owner->GetTeam() != owner->GetPlayerWithBallTeam()) && owner->GetPlayerWithBallTeam() >= 0);
 }
 
-
-
 bool PlayerCondition_CanPassBall::OnTest(Player* owner)
 {
 	return owner->CanMakePass();
