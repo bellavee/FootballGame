@@ -37,3 +37,9 @@ class PlayerCondition_IsBooted : public Condition<Player>
 public:
 	bool OnTest(Player * owner) override;
 };
+
+class PlayerCondition_IsResetLaunched : public Condition<Player>
+{
+public:
+	bool OnTest(Player* owner) override;
+};

@@ -34,10 +34,12 @@ public:
 	bool CanMakePass() const { return mPassCooldownTimer <= 0.0f; }
 	bool IsInvincible() const { return mInvincibilityTimer > 0.0f; }
 	bool IsBoosted() { return mSpeedBoostTimer > 0.0f; }
+	bool IsResetLaunched() { return mIsResetLaunched; }
+	void SetIsResetLaunched(bool val) { mIsResetLaunched = val; }
 
 	void HoldBall();
 	void LoseBall(Ball* ball);
-	void GiveBall(Player* player, Ball* ball);
+	//void GiveBall(Player* player, Ball* ball);
 
 	void DrawInterceptionLines();
 	void DrawPassingTrajectory(const sf::Vector2f& target);
@@ -77,6 +79,7 @@ private:
 	float mZoneMinY;
 	float mZoneMaxY;
 	bool mMovingUp;
+	bool mIsResetLaunched = false;
 
 	float mPossessionTimer = 0.0f;
 	float mInvincibilityTimer = 0.0f;

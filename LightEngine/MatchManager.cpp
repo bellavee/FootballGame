@@ -56,19 +56,21 @@ void MatchManager::CheckScoring() {
 
     sf::Vector2f ballPos = mBall->GetPosition();
 
-    if (ballPos.x >= mScene->GetWindowWidth() - Constant::GOAL_LINE_MARGIN) {
+    if (ballPos.x >= mScene->GetWindowWidth() - Constant::GOAL_LINE_MARGIN && mBall->GetCurrentHolderTeam() == 0) {
         mGreenScore++;
-        mScoringCooldown = 1.0f;
+        mScoringCooldown = 2.0f;
         ResetAfterScoring(1);
     }
-    else if (ballPos.x <= Constant::GOAL_LINE_MARGIN) {
+    else if (ballPos.x <= Constant::GOAL_LINE_MARGIN && mBall->GetCurrentHolderTeam() == 1) {
         mRedScore++;
-        mScoringCooldown = 1.0f;
+        mScoringCooldown = 2.0f;
         ResetAfterScoring(0);
     }
 }
 
 void MatchManager::ResetAfterScoring(int teamToReceiveBall) {
+    std::cout << "reset" << std::endl;
+    
     ResetPositions();
 
     std::vector<Player*>& receivingTeam = (teamToReceiveBall == 0) ? *mGreenTeam : *mRedTeam;
@@ -83,11 +85,12 @@ void MatchManager::ResetAfterScoring(int teamToReceiveBall) {
     mBall->SetCurrentHolder(nullptr);
 
     sf::sleep(sf::milliseconds(100));
+    selectedPlayer->GiveBall();
     //selectedPlayer->GetStateMachine()->SetState(Player::PlayerState::JustGotTheBall);
    // selectedPlayer->HoldBall();
 
-    sf::Vector2f playerPos = selectedPlayer->GetPosition();
-    mBall->SetPosition(playerPos.x, playerPos.y);
+    //sf::Vector2f playerPos = selectedPlayer->GetPosition();
+    //mBall->SetPosition(playerPos.x, playerPos.y);
 }
 
 void MatchManager::ResetPositions() {
@@ -115,7 +118,9 @@ void MatchManager::ResetPositions() {
             greenPositions[i].x,
             greenPositions[i].y
         );
-        (*mGreenTeam)[i]->GetStateMachine()->SetState(Player::PlayerState::Idle);
+        (*mGreenTeam)[i]->ResetStates();
+        ((*mGreenTeam)[i]);
+        //(*mGreenTeam)[i]->GetStateMachine()->SetState(Player::PlayerState::Idle);
     }
 
     for (size_t i = 0; i < mRedTeam->size(); i++) {
@@ -123,6 +128,7 @@ void MatchManager::ResetPositions() {
             redPositions[i].x,
             redPositions[i].y
         );
-        (*mRedTeam)[i]->GetStateMachine()->SetState(Player::PlayerState::Idle);
+        (*mRedTeam)[i]->ResetStates();
+        //(*mRedTeam)[i]->GetStateMachine()->SetState(Player::PlayerState::Idle);
     }
 }

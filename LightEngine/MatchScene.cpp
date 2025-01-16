@@ -1,3 +1,4 @@
+
 #include "MatchScene.h"
 
 #include "Constant.h"
@@ -33,7 +34,7 @@ void MatchScene::OnUpdate() {
     mMatchManager->Update();
     DrawGoalLines();
 
-    if (mDebugMode) {
+    if (true) {
         DrawZones();
 
         for (Player* player : mGreenTeam) {

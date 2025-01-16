@@ -20,8 +20,6 @@ bool PlayerCondition_OpponentHavingBall::OnTest(Player* owner)
 	return (!owner->HasBall() && (owner->GetTeam() != owner->GetPlayerWithBallTeam()) && owner->GetPlayerWithBallTeam() >= 0);
 }
 
-
-
 bool PlayerCondition_CanPassBall::OnTest(Player* owner)
 {
 	return owner->CanMakePass();
@@ -30,4 +28,9 @@ bool PlayerCondition_CanPassBall::OnTest(Player* owner)
 bool PlayerCondition_IsBooted::OnTest(Player* owner)
 {
 	return owner->IsBoosted();
+}
+
+bool PlayerCondition_IsResetLaunched::OnTest(Player* owner)
+{
+	return owner->IsResetLaunched();
 }
