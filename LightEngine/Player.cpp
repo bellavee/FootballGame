@@ -51,7 +51,7 @@ void Player::HoldBall() {
 		currentHolder->LoseBall(ball);
 	}
 
-	mHasBall = true;
+	//mHasBall = true;
 	//mCurrentHolder = ball;
 	ball->SetCurrentHolder(this);
 	ball->MoveTo(this); // new
@@ -62,7 +62,7 @@ void Player::HoldBall() {
 }
 
 void Player::LoseBall(Ball* ball) {
-	mHasBall = false;
+	//mHasBall = false;
 	//mCurrentHolder = nullptr;
 	if (ball->GetCurrentHolder() == this) {
 		ball->SetCurrentHolder(nullptr);
@@ -422,37 +422,42 @@ void Player::InitializeStateMachine()
 	//tag
 	/* IDLE */
 	Action<Player>* idle = m_stateMachine->CreateAction<PlayerAction_Idle>(PlayerState::Idle);
-
 	auto transitionIdleJustHadBall = idle->CreateTransition(PlayerState::JustGotTheBall);
-	auto transitionIdleTeamMateHadBall = idle->CreateTransition(PlayerState::TeamMateHavingTheBall);
-	auto transitionIdleOpponentHadBall = idle->CreateTransition(PlayerState::OpponentHavingTheBall);
-	transitionIdleJustHadBall->AddCondition<PlayerCondition_JustHadBall>();
-	transitionIdleOpponentHadBall->AddCondition<PlayerCondition_OpponentHavingBall>();
-	transitionIdleTeamMateHadBall->AddCondition<PlayerCondition_TeamMateHavingBall>();
+	transitionIdleJustHadBall->AddCondition<PlayerCondition_HavingBall>();
+	transitionIdleJustHadBall->AddCondition<PlayerCondition_IsNotInvincible>();
+	/*auto transitionIdleTeamMateHadBall = idle->CreateTransition(PlayerState::TeamMateHavingTheBall);
+	auto transitionIdleOpponentHadBall = idle->CreateTransition(PlayerState::OpponentHavingTheBall);*/
+	//transitionIdleJustHadBall
+	/*transitionIdleOpponentHadBall->AddCondition<PlayerCondition_OpponentHavingBall>();
+	transitionIdleTeamMateHadBall->AddCondition<PlayerCondition_TeamMateHavingBall>();*/
 	// add condition
 
 	/* JustGotTheBall */
 	Action<Player>* justGotTheBall = m_stateMachine->CreateAction<PlayerAction_JustGotTheBall>(PlayerState::JustGotTheBall);
-	auto transitionJustGotTheBallHavingBall = justGotTheBall->CreateTransition(PlayerState::HavingTheBall);
+	/*auto transitionJustGotTheBallHavingBall = justGotTheBall->CreateTransition(PlayerState::HavingTheBall);
+	transitionJustGotTheBallHavingBall->AddCondition<PlayerCondition_CanMakePass>();
+	transitionJustGotTheBallHavingBall->AddCondition<PlayerCondition_HavingBall>();*/
 
 	/* HavingBall */
 	Action<Player>* havingTheBall = m_stateMachine->CreateAction<PlayerAction_HavingTheBall>(PlayerState::HavingTheBall);
-	auto transitionHavingBallTeamMateHavingBall = havingTheBall->CreateTransition(PlayerState::TeamMateHavingTheBall);
+	/*auto transitionHavingBallTeamMateHavingBall = havingTheBall->CreateTransition(PlayerState::TeamMateHavingTheBall);
 	auto transitionHavingBallOpponentHavingBall = havingTheBall->CreateTransition(PlayerState::OpponentHavingTheBall);
 	transitionHavingBallTeamMateHavingBall->AddCondition<PlayerCondition_TeamMateHavingBall>();
+	transitionHavingBallOpponentHavingBall->AddCondition<PlayerCondition_CanMakePass>();
 	transitionHavingBallOpponentHavingBall->AddCondition<PlayerCondition_OpponentHavingBall>();
+	transitionHavingBallTeamMateHavingBall->AddCondition<PlayerCondition_CanMakePass>();*/
 
 	/* TeamMateHavingTheBall */
 	Action<Player>* mateHavingTheBall = m_stateMachine->CreateAction<PlayerAction_TeamMateHavingTheBall>(PlayerState::TeamMateHavingTheBall);
-	auto transitionMateHavingBallJustGotBall = mateHavingTheBall->CreateTransition(PlayerState::JustGotTheBall);
+	/*auto transitionMateHavingBallJustGotBall = mateHavingTheBall->CreateTransition(PlayerState::JustGotTheBall);
 	auto transitionMateHavingBallOppGotBall = mateHavingTheBall->CreateTransition(PlayerState::OpponentHavingTheBall);
-	auto transitionMateHavingBallIdle = mateHavingTheBall->CreateTransition(PlayerState::Idle);
+	auto transitionMateHavingBallIdle = mateHavingTheBall->CreateTransition(PlayerState::Idle);*/
 
 	/* OppHavingTheBall */
 	Action<Player>* oppHavingTheBall = m_stateMachine->CreateAction<PlayerAction_OpponentHavingTheBall>(PlayerState::OpponentHavingTheBall);
-	auto transitionOppHavingBallJustGotBall = oppHavingTheBall->CreateTransition(PlayerState::JustGotTheBall);
+	/*auto transitionOppHavingBallJustGotBall = oppHavingTheBall->CreateTransition(PlayerState::JustGotTheBall);
 	auto transitionOppHavingBallMateGotBall = oppHavingTheBall->CreateTransition(PlayerState::TeamMateHavingTheBall);
-	auto transitionOppHavingBallIdle = oppHavingTheBall->CreateTransition(PlayerState::Idle);
+	auto transitionOppHavingBallIdle = oppHavingTheBall->CreateTransition(PlayerState::Idle);*/
 
 	m_stateMachine->SetState(PlayerState::Idle);
 }

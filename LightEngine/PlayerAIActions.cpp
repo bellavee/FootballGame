@@ -23,6 +23,7 @@ void PlayerAction_JustGotTheBall::OnStart(Player* player)
 
 void PlayerAction_JustGotTheBall::OnUpdate(Player* player)
 {
+
 	float dt = player->GetDeltaTime(), mInvincibilityTimer = player->GetInvincibilityTimer(), mPassCooldownTimer = player->GetPassCooldownTimer(), mSpeedBoostTimer = player->GetSpeedBoostTimer();
 
 	if (mInvincibilityTimer > 0) {
@@ -45,7 +46,7 @@ void PlayerAction_JustGotTheBall::OnUpdate(Player* player)
 	}
 
 	if (mInvincibilityTimer <= 0 && mPassCooldownTimer <= 0 && mSpeedBoostTimer <= 0) {
-		player->GetStateMachine()->SetState(Player::PlayerState::HavingTheBall);
+		//player->GetStateMachine()->SetState(Player::PlayerState::HavingTheBall);
 	}
 }
 
@@ -57,32 +58,32 @@ void PlayerAction_JustGotTheBall::OnEnd(Player* player)
 
 void PlayerAction_HavingTheBall::OnUpdate(Player* player)
 {
-	if (!player->HasBall()) {
+	/*if (!player->HasBall()) {
 		player->GetStateMachine()->SetState(Player::PlayerState::TeamMateHavingTheBall);
 		player->GetStateMachine()->SetState(Player::PlayerState::OpponentHavingTheBall);
 	}
 	Player* passTarget = nullptr;
 	player->HandleHavingBall(passTarget);
 	if (!passTarget)
-		return;
-	player->GetStateMachine()->SetState(Player::PlayerState::TeamMateHavingTheBall);
+		return;*/
+	/*player->GetStateMachine()->SetState(Player::PlayerState::TeamMateHavingTheBall);
 	player->GetStateMachine()->SetState(Player::PlayerState::OpponentHavingTheBall);
-	passTarget->GetStateMachine()->SetState(Player::PlayerState::JustGotTheBall);
+	passTarget->GetStateMachine()->SetState(Player::PlayerState::JustGotTheBall);*/
 }
 
 void PlayerAction_TeamMateHavingTheBall::OnUpdate(Player* player)
 {
 	//check transition with JustGotTheBall state
-	if (player->GetTeam() == player->GetPlayerWithBallTeam())
-		player->HandleSupportingBehavior();
-	else 
-		player->GetStateMachine()->SetState(Player::PlayerState::OpponentHavingTheBall);
+	//if (player->GetTeam() == player->GetPlayerWithBallTeam())
+	//	player->HandleSupportingBehavior();
+	//else 
+	//	player->GetStateMachine()->SetState(Player::PlayerState::OpponentHavingTheBall);
 }
 
 void PlayerAction_OpponentHavingTheBall::OnUpdate(Player* player)
 {
-	if (player->GetTeam() != player->GetPlayerWithBallTeam())
+	/*if (player->GetTeam() != player->GetPlayerWithBallTeam())
 		player->HandleDefensiveBehavior() ;
 	else
-		player->GetStateMachine()->SetState(Player::PlayerState::TeamMateHavingTheBall);
+		player->GetStateMachine()->SetState(Player::PlayerState::TeamMateHavingTheBall);*/
 }

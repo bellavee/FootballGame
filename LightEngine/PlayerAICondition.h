@@ -2,7 +2,7 @@
 #include "Player.h"
 #include "Condition.h"
 
-class PlayerCondition_JustHadBall : public Condition<Player>
+class PlayerCondition_IsNotInvincible : public Condition<Player>
 {
 public:
 	bool OnTest(Player* owner) override;

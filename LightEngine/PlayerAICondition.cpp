@@ -15,7 +15,7 @@ bool PlayerCondition_OpponentHavingBall::OnTest(Player* owner)
 	return (!owner->HasBall() && (owner->GetTeam() != owner->GetPlayerWithBallTeam()));
 }
 
-bool PlayerCondition_JustHadBall::OnTest(Player* owner)
+bool PlayerCondition_IsNotInvincible::OnTest(Player* owner)
 {
 	return !owner->IsInvincible();
 }

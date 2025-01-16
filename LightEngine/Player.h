@@ -15,6 +15,8 @@ public:
 	int GetTeam() const { return mTeamSide; }
 	void SetTeam(int team) { mTeamSide = team; }
 	bool HasBall() const { return mHasBall; }
+	void GiveBall() { mHasBall = true; }
+	void RemoveBall() { mHasBall = false; }
 	int GetPlayerWithBallTeam();
 	void SetZoneBounds(float minY, float maxY) {
 		mZoneMinY = minY;
