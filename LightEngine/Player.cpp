@@ -14,7 +14,7 @@ Player::Player() : m_stateMachine(std::make_unique<StateMachine<Player>>(this, P
 void Player::OnInitialize() {
 	InitializeStateMachine();
 	mHasBall = false;
-	SetDirection(0, 1);
+	SetDirection(0, 0);
 	SetSpeed(150.0f);
 	mBall = static_cast<MatchScene*>(GetScene())->GetBall();
 
