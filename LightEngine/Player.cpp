@@ -12,6 +12,7 @@ Player::Player() : m_stateMachine(std::make_unique<StateMachine<Player>>(this, P
 }
 
 void Player::OnInitialize() {
+	SetTag(MatchScene::Tag::PLAYER);
 	InitializeStateMachine();
 	mHasBall = false;
 	SetDirection(0, 0);
@@ -32,10 +33,13 @@ void Player::OnUpdate() {
 }
 
 void Player::OnCollision(Entity* collidedWith) {
-	if (Ball* ball = dynamic_cast<Ball*>(collidedWith)) {
-		if (ball->GetCurrentHolder() == nullptr && !IsInvincible()) {
+	if (collidedWith->IsTag(MatchScene::Tag::BALL)) {
+		Ball* ball = dynamic_cast<Ball*>(collidedWith);
+		if (ball->GetCurrentHolder() == nullptr && !IsInvincible())
 			HoldBall();
-		}
+	}
+	if (collidedWith->IsTag(MatchScene::Tag::PLAYER)) {
+		mTarget.isSet = false;
 	}
 }
 

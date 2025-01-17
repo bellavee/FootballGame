@@ -9,6 +9,10 @@
 class MatchScene : public Scene
 {
 public:
+	enum Tag {
+		PLAYER,
+		BALL,
+	};
 	void OnInitialize() override;
 	void OnEvent(const sf::Event& event) override;
 	void OnUpdate() override;

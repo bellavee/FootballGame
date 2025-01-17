@@ -6,6 +6,7 @@
 class Ball : public Entity
 {
 public:
+	void OnInitialize() override;
 	void OnUpdate() override;
 	void MoveTo(Player* player);
 

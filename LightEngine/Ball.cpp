@@ -1,5 +1,10 @@
 #include "Ball.h"
+#include "MatchScene.h"
 
+void Ball::OnInitialize()
+{
+    SetTag(MatchScene::Tag::BALL);
+}
 
 void Ball::OnUpdate() {
     if (mCurrentHolder) {
