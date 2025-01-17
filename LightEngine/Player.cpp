@@ -27,6 +27,7 @@ void Player::OnUpdate() {
 	sf::Vector2f pos = GetPosition();
 	if (pos.y < mZoneMinY) SetPosition(pos.x, mZoneMinY);
 	if (pos.y > mZoneMaxY) SetPosition(pos.x, mZoneMaxY);
+	Debug::DrawCircle(pos.x, pos.y, HasBall() ? Constant::PLAYER_RADIUS : 0, sf::Color(0, 0, 255, 128));
 	Debug::DrawText(GetPosition(0, 0).x, GetPosition(0, 0).y - 50, GetPlayerState(), sf::Color::White);
 }
 
@@ -256,7 +257,7 @@ void Player::HandleBallCarrierBehavior(const std::vector<Player*>& opposingTeam,
 			//DrawPassingTrajectory((*passTarget)->GetPosition());
 			
 			DrawPassingTrajectory((*passTarget)->GetPosition());
-			RemoveBall();
+			//RemoveBall();
 			//GiveBall(passTarget, mCurrentHolder);
 			//LoseBall(mBall);
 			return;
