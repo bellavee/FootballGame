@@ -60,13 +60,13 @@ public:
 		OpponentHavingTheBall,
 		Count
 	};
-	void HandleHavingBall(Player* passTarget);
+	void HandleHavingBall(Player** passTarget);
 	void HandleSupportingBehavior();
 	void HandleDefensiveBehavior();
 private:
 	bool IsOpponentBlockingPass(const sf::Vector2f& from, const sf::Vector2f& to, const sf::Vector2f& oppPos);
 
-	void HandleBallCarrierBehavior(const std::vector<Player*>& opposingTeam, Player* passTarget);
+	void HandleBallCarrierBehavior(const std::vector<Player*>& opposingTeam, Player** passTarget);
 	
 	
 	void HandleFreeBallBehavior();

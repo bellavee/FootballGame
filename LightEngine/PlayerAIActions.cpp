@@ -45,7 +45,8 @@ void PlayerAction_JustGotTheBall::OnUpdate(Player* player)
 	else {
 		player->SetSpeed(Constant::PLAYER_SPEED);
 	}
-
+	Player* passTarget = nullptr;
+	player->HandleHavingBall(&passTarget);
 }
 
 void PlayerAction_JustGotTheBall::OnEnd(Player* player)
@@ -56,34 +57,22 @@ void PlayerAction_JustGotTheBall::OnEnd(Player* player)
 
 void PlayerAction_HavingTheBall::OnUpdate(Player* player)
 {
-	/*if (!player->HasBall()) {
-		player->GetStateMachine()->SetState(Player::PlayerState::TeamMateHavingTheBall);
-		player->GetStateMachine()->SetState(Player::PlayerState::OpponentHavingTheBall);
-	}*/
 	Player* passTarget = nullptr;
-	player->HandleHavingBall(passTarget);
+	player->HandleHavingBall(&passTarget);
 	if (!passTarget)
 		return;
 	passTarget->GiveBall();
-
-	/*player->GetStateMachine()->SetState(Player::PlayerState::TeamMateHavingTheBall);
-	player->GetStateMachine()->SetState(Player::PlayerState::OpponentHavingTheBall);
-	passTarget->GetStateMachine()->SetState(Player::PlayerState::JustGotTheBall);*/
 }
 
 void PlayerAction_TeamMateHavingTheBall::OnUpdate(Player* player)
 {
-	//check transition with JustGotTheBall state
-	//if (player->GetTeam() == player->GetPlayerWithBallTeam())
-		//player->HandleSupportingBehavior();
-	//else 
-	//	player->GetStateMachine()->SetState(Player::PlayerState::OpponentHavingTheBall);
+
+	if (player->GetTeam() == player->GetPlayerWithBallTeam())
+		player->HandleSupportingBehavior();
 }
 
 void PlayerAction_OpponentHavingTheBall::OnUpdate(Player* player)
 {
-	//if (player->GetTeam() != player->GetPlayerWithBallTeam())
-		//player->HandleDefensiveBehavior();
-	/*else
-		player->GetStateMachine()->SetState(Player::PlayerState::TeamMateHavingTheBall);*/
+	if (player->GetTeam() != player->GetPlayerWithBallTeam())
+		player->HandleDefensiveBehavior();
 }

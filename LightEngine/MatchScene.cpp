@@ -39,7 +39,7 @@ void MatchScene::OnUpdate() {
 
         for (Player* player : mGreenTeam) {
             player->DrawInterceptionLines();
-            if (player->HasBall() && mShowPassTrajectory) {
+            if (player->HasBall()) {
                 if (Player* target = player->FindBestPassTarget()) {
                     player->DrawPassingTrajectory(target->GetPosition());
                 }
@@ -48,7 +48,7 @@ void MatchScene::OnUpdate() {
 
         for (Player* player : mRedTeam) {
             player->DrawInterceptionLines();
-            if (player->HasBall() && mShowPassTrajectory) {
+            if (player->HasBall()) {
                 if (Player* target = player->FindBestPassTarget()) {
                     player->DrawPassingTrajectory(target->GetPosition());
                 }

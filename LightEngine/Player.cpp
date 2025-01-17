@@ -145,7 +145,7 @@ Player* Player::FindBestPassTarget() {
 	return bestScore > 0.3f ? bestTarget : nullptr;
 }
 
-void Player::HandleHavingBall(Player* passTarget)
+void Player::HandleHavingBall(Player** passTarget)
 {
 	MatchScene* matchScene = dynamic_cast<MatchScene*>(GetScene());
 	std::vector<Player*> opposingTeam = mTeamSide == 0 ?
@@ -192,7 +192,7 @@ void Player::DrawInterceptionLines() {
 
 void Player::DrawPassingTrajectory(const sf::Vector2f& target) {
 	if (!mHasBall) return;
-
+	
 	sf::Vector2f start = GetPosition();
 	sf::Vector2f direction = target - start;
 	float length = std::hypot(direction.x, direction.y);
@@ -224,7 +224,7 @@ void Player::DrawPassingTrajectory(const sf::Vector2f& target) {
 	}
 }
 
-void Player::HandleBallCarrierBehavior(const std::vector<Player*>& opposingTeam, Player *passTarget) {
+void Player::HandleBallCarrierBehavior(const std::vector<Player*>& opposingTeam, Player **passTarget) {
 	sf::Vector2f currentPos = GetPosition();
 	float goalX = mTeamSide == 0 ?
 		GetScene()->GetWindowWidth() - Constant::GOAL_LINE_MARGIN :
@@ -252,10 +252,13 @@ void Player::HandleBallCarrierBehavior(const std::vector<Player*>& opposingTeam,
 		(currentPos.x < Constant::GOAL_LINE_MARGIN * 3);
 
 	if (!nearGoal && nearestOpponent && minDistance < Constant::INTERCEPTION_RANGE && CanMakePass()) {
-		passTarget = FindBestPassTarget();
-		if (passTarget) {
-			LoseBall(mBall);
+		*passTarget = FindBestPassTarget();
+		if (*passTarget && !IsInvincible() && CanMakePass()) {
+			//DrawPassingTrajectory((*passTarget)->GetPosition());
+			
+			DrawPassingTrajectory((*passTarget)->GetPosition());
 			//GiveBall(passTarget, mCurrentHolder);
+			LoseBall(mBall);
 			return;
 		}
 	}
