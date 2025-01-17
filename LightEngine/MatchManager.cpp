@@ -38,7 +38,6 @@ void MatchManager::CheckScoring() {
 }
 
 void MatchManager::ResetAfterScoring(int teamToReceiveBall) {
-    std::cout << "reset" << teamToReceiveBall <<  std::endl;
     if (mBall->GetCurrentHolder()) {
         mBall->GetCurrentHolder()->LoseBall(mBall);
     }

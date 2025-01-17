@@ -25,7 +25,7 @@ void Player::OnUpdate() {
 	if (!mBall)
 		mBall = static_cast<MatchScene*>(GetScene())->GetBall();
 	m_stateMachine->Update();
-	sf::Vector2f pos = GetPosition();
+	sf::Vector2f pos = GetPosition(); 
 	if (pos.y < mZoneMinY) SetPosition(pos.x, mZoneMinY);
 	if (pos.y > mZoneMaxY) SetPosition(pos.x, mZoneMaxY);
 	Debug::DrawCircle(pos.x, pos.y, HasBall() ? Constant::PLAYER_RADIUS : 0, sf::Color(0, 0, 255, 128));
@@ -40,6 +40,8 @@ void Player::OnCollision(Entity* collidedWith) {
 	}
 	if (collidedWith->IsTag(MatchScene::Tag::PLAYER)) {
 		mTarget.isSet = false;
+		//sf::Vector2f pos = GetPosition();
+		//GoToPosition(pos.x - Constant::DISTANCE_BETWEEN_PLAYERS, pos.y - Constant::DISTANCE_BETWEEN_PLAYERS);
 	}
 }
 
