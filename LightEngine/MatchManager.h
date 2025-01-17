@@ -7,7 +7,6 @@ class MatchManager
 public:
 	MatchManager(std::vector<Player*>* greenTeam, std::vector<Player*>* redTeam, Scene* scene, Ball* ball);
 	void Update();
-	void CheckBallPossession();
 	void CheckScoring();
 	void ResetAfterScoring(int teamToReceiveBall);
 	void ResetPositions();

@@ -17,7 +17,6 @@ void Player::OnInitialize() {
 	SetDirection(0, 0);
 	SetSpeed(150.0f);
 	mBall = static_cast<MatchScene*>(GetScene())->GetBall();
-
 }
 
 void Player::OnUpdate() {
@@ -32,11 +31,11 @@ void Player::OnUpdate() {
 }
 
 void Player::OnCollision(Entity* collidedWith) {
-	/*if (Ball* ball = dynamic_cast<Ball*>(collidedWith)) {
-		if (ball->GetCurrentHolder() == nullptr) {
-			HoldBall(ball);
+	if (Ball* ball = dynamic_cast<Ball*>(collidedWith)) {
+		if (ball->GetCurrentHolder() == nullptr && !IsInvincible()) {
+			HoldBall();
 		}
-	}*/
+	}
 }
 
 int Player::GetPlayerWithBallTeam()
@@ -257,8 +256,9 @@ void Player::HandleBallCarrierBehavior(const std::vector<Player*>& opposingTeam,
 			//DrawPassingTrajectory((*passTarget)->GetPosition());
 			
 			DrawPassingTrajectory((*passTarget)->GetPosition());
+			RemoveBall();
 			//GiveBall(passTarget, mCurrentHolder);
-			LoseBall(mBall);
+			//LoseBall(mBall);
 			return;
 		}
 	}
@@ -398,8 +398,9 @@ void Player::HandleFreeBallBehavior() {
 }
 
 void Player::ResetStates() {
-	if (mHasBall)
+	if (mHasBall) {
 		return;
+	}
 	mHasBall = false;
 	mIsResetLaunched = true;
 	mInvincibilityTimer = 0.0f;
